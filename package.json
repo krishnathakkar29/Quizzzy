@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.4.1",
+    "@google/generative-ai": "^0.14.1",
     "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^5.16.2",
     "@radix-ui/react-avatar": "^1.1.0",

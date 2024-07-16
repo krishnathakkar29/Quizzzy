@@ -35,8 +35,7 @@ const QuizCreation = (props: Props) => {
     resolver: zodResolver(quizCreationSchema),
     defaultValues: {
       amount: 3,
-      topic: "",
-      type: "mcq",
+      topic: ""
     },
   });
 
@@ -97,33 +96,7 @@ const QuizCreation = (props: Props) => {
                 )}
               />
 
-              <div className="flex justify-between">
-                <Button
-                  variant={
-                    form.getValues("type") === "mcq" ? "default" : "secondary"
-                  }
-                  className="w-1/2 rounded-none rounded-l-lg"
-                  onClick={() => {
-                    form.setValue("type", "mcq");
-                  }}
-                  type="button"
-                >
-                  <CopyCheck className="w-4 h-4 mr-2" /> Multiple Choice
-                </Button>
-                <Separator orientation="vertical" />
-                <Button
-                  variant={
-                    form.getValues("type") === "open_ended"
-                      ? "default"
-                      : "secondary"
-                  }
-                  className="w-1/2 rounded-none rounded-r-lg"
-                  onClick={() => form.setValue("type", "open_ended")}
-                  type="button"
-                >
-                  <BookOpen className="w-4 h-4 mr-2" /> Open Ended
-                </Button>
-              </div>
+              
               <Button type="submit">Submit</Button>
             </form>
           </Form>
