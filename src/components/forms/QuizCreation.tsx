@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   Card,
   CardContent,
@@ -8,10 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useForm } from "react-hook-form";
-import { quizCreationSchema } from "@/schemas/form/quiz";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -21,27 +16,57 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "../ui/input";
+import { quizCreationSchema } from "@/schemas/form/quiz";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Button } from "../ui/button";
-import { BookOpen, CopyCheck } from "lucide-react";
-import { Separator } from "../ui/separator";
+import { Input } from "../ui/input";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-type Input = z.infer<typeof quizCreationSchema>;
+type InputSchema = z.infer<typeof quizCreationSchema>;
 
 type Props = {};
 
 const QuizCreation = (props: Props) => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof quizCreationSchema>>({
     resolver: zodResolver(quizCreationSchema),
     defaultValues: {
       amount: 3,
-      topic: ""
+      topic: "",
     },
   });
 
   form.watch();
+  const { mutate: getQuestions, isPending } = useMutation({
+    mutationFn: async ({ amount, topic }: InputSchema) => {
+      const response = await axios.post("/api/game", {
+        topic,
+        amount,
+      });
 
-  const onSubmit = (input: Input) => {};
+      return response.data;
+    },
+  });
+
+  const onSubmit = (input: InputSchema) => {
+    console.log("input hai", input);
+    getQuestions(
+      {
+        amount: input.amount,
+        topic: input.topic,
+      },
+      {
+        //response.data jo return kiya tha woh aayega yaha
+        onSuccess: ({ gameId }: { gameId: string }) => {
+          router.push(`/play/mcq/${gameId}`);
+        },
+      }
+    );
+  };
   return (
     <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
       <Card>
@@ -96,8 +121,9 @@ const QuizCreation = (props: Props) => {
                 )}
               />
 
-              
-              <Button type="submit">Submit</Button>
+              <Button disabled={isPending} type="submit">
+                Submit
+              </Button>
             </form>
           </Form>
         </CardContent>
