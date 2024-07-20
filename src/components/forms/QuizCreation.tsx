@@ -19,12 +19,15 @@ import {
 import { quizCreationSchema } from "@/schemas/form/quiz";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import LoadingQuestions from "../LoadingQuestions";
+import { useToast } from "../ui/use-toast";
 
 type InputSchema = z.infer<typeof quizCreationSchema>;
 
@@ -32,6 +35,10 @@ type Props = {};
 
 const QuizCreation = (props: Props) => {
   const router = useRouter();
+  const [showLoader, setShowLoader] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof quizCreationSchema>>({
     resolver: zodResolver(quizCreationSchema),
     defaultValues: {
@@ -53,20 +60,41 @@ const QuizCreation = (props: Props) => {
   });
 
   const onSubmit = (input: InputSchema) => {
-    console.log("input hai", input);
+    setShowLoader(true);
     getQuestions(
       {
         amount: input.amount,
         topic: input.topic,
       },
+
       {
         //response.data jo return kiya tha woh aayega yaha
         onSuccess: ({ gameId }: { gameId: string }) => {
-          router.push(`/play/mcq/${gameId}`);
+          setFinished(false);
+          setTimeout(() => {
+            router.push(`/play/mcq/${gameId}`);
+          }, 2000);
+        },
+        onError: (error) => {
+          setShowLoader(false);
+          if (error instanceof AxiosError) {
+            if (error.response?.status === 500) {
+              toast({
+                title: "Error",
+                description: "Something went wrong. Please try again later.",
+                variant: "destructive",
+              });
+            }
+          }
         },
       }
     );
   };
+
+  if (showLoader) {
+    return <LoadingQuestions finished={finished} />;
+  }
+
   return (
     <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
       <Card>

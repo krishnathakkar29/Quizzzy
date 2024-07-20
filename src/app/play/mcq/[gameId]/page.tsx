@@ -36,7 +36,6 @@ const McqPage = async ({ params: { gameId } }: Props) => {
     return redirect("/quiz");
   }
 
-  console.log(game);
   return <MCQ game={game} />;
 };
 
