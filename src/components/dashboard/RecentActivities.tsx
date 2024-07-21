@@ -9,6 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import HistoryComponent from "../HistoryComponent";
+import { prisma } from "@/lib/db";
 
 type Props = {};
 
@@ -17,16 +19,23 @@ const RecentActivities = async (props: Props) => {
   if (!session?.user) {
     return redirect("/");
   }
+  const games_count = await prisma.game.count({
+    where: {
+      userId: session.user.id,
+    },
+  });
   return (
     <Card className="col-span-4 lg:col-span-3">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">
           <Link href="/history">Recent Activity</Link>
         </CardTitle>
-        <CardDescription>You have played a total of 7 quizzes.</CardDescription>
+        <CardDescription>
+          You have played a total of {games_count} quizzes.
+        </CardDescription>
       </CardHeader>
       <CardContent className="max-h-[580px] overflow-scroll">
-        Histories
+        <HistoryComponent limit={10} userId={session.user.id} />
       </CardContent>
     </Card>
   );

@@ -81,3 +81,9 @@ model Questions {
 
   @@index([gameId], name: "gameId")
 }
+
+model topic_count {
+  id    String @id @default(cuid())
+  topic String @unique
+  count Int    @default(0)
+}

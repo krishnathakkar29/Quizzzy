@@ -8,14 +8,18 @@ export const metadata = {
   description: "Quiz yourself on anything!",
 };
 
-type Props = {};
+type Props = {
+  searchParams: {
+    topic?: string;
+  };
+};
 
-const QuizPage = async (props: Props) => {
+const QuizPage = async ({ searchParams: { topic } }: Props) => {
   const session = await auth();
   if (!session?.user) {
     redirect("/");
   }
-  return <QuizCreation />;
+  return <QuizCreation topicParam={topic ?? ""} />;
 };
 
 export default QuizPage;

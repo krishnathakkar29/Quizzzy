@@ -31,9 +31,11 @@ import { useToast } from "../ui/use-toast";
 
 type InputSchema = z.infer<typeof quizCreationSchema>;
 
-type Props = {};
+type Props = {
+  topicParam?: string;
+};
 
-const QuizCreation = (props: Props) => {
+const QuizCreation = ({ topicParam }: Props) => {
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -43,7 +45,7 @@ const QuizCreation = (props: Props) => {
     resolver: zodResolver(quizCreationSchema),
     defaultValues: {
       amount: 3,
-      topic: "",
+      topic: topicParam,
     },
   });
 
